@@ -92,7 +92,6 @@ p2 <- ggplot(period_usage, aes(x = time_period, y = AvgMinutes, fill = Device)) 
        x = "Time Period",
        y = "Average Usage (minutes)") +
   theme_minimal()
-theme(legend.position = "top")
 
 print(p2)
 ```
