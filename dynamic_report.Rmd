@@ -17,6 +17,10 @@ body {
 }
 ```
 
+## Background
+
+This report analyzes personal electronic device(mobile phones, tablets, and laptops) usage across different times of day. All the data is collected in 2 days.
+
 ```{r}
 csv_url <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vRm8fa4knky4CAfx6Yl5qJsZeSRsE9fChxJsmtqNtAOrUEbKiTrnQKhJz3C8_3oD_v-mdJBVulajxGP/pub?output=csv"
 logged_data <- read_csv(csv_url)
