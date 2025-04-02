@@ -1,0 +1,104 @@
+---
+title: My dynamic report
+output: html_fragment
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE, error=FALSE)
+library(tidyverse)
+```
+
+```{css}
+body {
+  color: orange;
+}
+.plot {
+  margin-bottom: 30px;
+}
+```
+
+```{r}
+csv_url <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vRm8fa4knky4CAfx6Yl5qJsZeSRsE9fChxJsmtqNtAOrUEbKiTrnQKhJz3C8_3oD_v-mdJBVulajxGP/pub?output=csv"
+logged_data <- read_csv(csv_url)
+# Rename variables
+latest_data <- logged_data %>%
+  rename(
+    timestamp = "Timestamp",
+    devices_used = "In the past hour, which electronic devices have you used?",
+    time_period = "What time period is it?",
+    phone_mins = "Duration of mobile phone usage (minutes, 0-60)",
+    tablet_mins = "Duration of tablet usage (minutes, 0-60)", 
+    laptop_mins = "Duration of laptop usage (minutes, 0-60)"
+  )
+
+```
+
+```{r}
+total_usage <- latest_data %>%
+  summarise(
+    Phone = sum(phone_mins),
+    Tablet = sum(tablet_mins),
+    Laptop = sum(laptop_mins)
+  ) %>%
+  pivot_longer(
+    cols = everything(),
+    names_to = "Device",
+    values_to = "TotalMinutes"
+  )
+
+period_usage <- latest_data %>%
+  group_by(time_period) %>%
+  summarise(
+    Phone = mean(phone_mins),
+    Tablet = mean(tablet_mins),
+    Laptop = mean(laptop_mins)
+  ) %>%
+  pivot_longer(
+    cols = -time_period,
+    names_to = "Device",
+    values_to = "AvgMinutes"
+  )
+```
+
+## Plot 1 Total Usage by Device
+
+```{r}
+p1 <- ggplot(total_usage, aes(x = Device, y = TotalMinutes, fill = Device)) +
+  geom_col() +
+  geom_text(aes(label = TotalMinutes)) +
+  labs(title = "Total Usage Time by Device",
+       x = "Device Type",
+       y = "Total Usage (minutes)") +
+  theme(legend.position = "none")
+print(p1)
+```
+
+## Plot 2 Average Usage by Time Period
+
+```{r}
+p2 <- ggplot(period_usage, aes(x = time_period, y = AvgMinutes, fill = Device)) +
+  geom_col() +
+  geom_text(aes(label = AvgMinutes)) +
+  labs(title = "Average Usage by Time Period",
+       x = "Time Period",
+       y = "Average Usage (minutes)") +
+  theme_minimal()
+print(p2)
+```
+
+## Summary values 1(most used device)
+
+```{r}
+most_used_device <- total_usage %>%
+  slice_max(TotalMinutes, n = 1)
+print(most_used_device)
+```
+
+## Summary values 2(least used device)
+
+```{r}
+least_used_device <- total_usage %>%
+  slice_min(TotalMinutes, n = 1)
+print(least_used_device)
+
+```
