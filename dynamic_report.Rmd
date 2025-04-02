@@ -81,12 +81,19 @@ print(p1)
 
 ```{r}
 p2 <- ggplot(period_usage, aes(x = time_period, y = AvgMinutes, fill = Device)) +
-  geom_col() +
-  geom_text(aes(label = AvgMinutes)) +
+  geom_col(position = position_dodge(width = 0.9), width = 0.8) +
+  geom_text(
+    aes(label = round(AvgMinutes, 2)),
+    position = position_dodge(width = 0.9),
+    vjust = -0.5,
+    size = 3,
+  ) +
   labs(title = "Average Usage by Time Period",
        x = "Time Period",
        y = "Average Usage (minutes)") +
   theme_minimal()
+theme(legend.position = "top")
+
 print(p2)
 ```
 
